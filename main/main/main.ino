@@ -3,58 +3,66 @@
 
 
 void emittersOn()
-unsigned int sensor_values[8];
 sensors.read(sensor_values);
+ QTRSensorsRC qtrrc((unsigned char[]) {6, 7, 8, 9, 10, 11, 12, 13}, 8); // 8 czujników
+ int sensorValues[8]; // Tablica odczytów czujników
 
+// definiowanie pinow
 #define MOTOR_A_IN1 2  // Lewy silnik 
 #define MOTOR_A_IN2 3  // Lewy silnik 
-#define MOTOR_B_IN1 4   // Prawy silnik 
-#define MOTOR_B_IN2 5   // Prawy silnik 
-const int buttonPin = A3;
+#define MOTOR_B_IN1 4  // Prawy silnik 
+#define MOTOR_B_IN2 5  // Prawy silnik 
+#define BUTTON_PIN  A3 // PRZYCISK
+#define TIME_LIMIT 10000  
+
+bool buttonState = digitalRead(BUTTON_PIN); // Odczyt stanu przycisku
+int clickCount = 0;           // Licznik kliknięć
+unsigned long startTime = 0;  // Czas startu odliczania
+bool lastButtonState = HIGH;  // Poprzedni stan przycisku
 
 
- QTRSensorsRC qtrrc((unsigned char[]) {6, 7, 8, 9, 10, 11, 12, 13}, 8); // 8 czujników
-
- int sensorValues[8]; // Tablica odczytów czujników
-// create an object for your type of sensor (RC or Analog)
-// in this example we have three sensors on analog inputs 0 - 2 (digital pins 14 - 16)
-
-// Kalibracja QTR-8RC
-  Serial.begin(9600);
-  Serial.println("Kalibracja czujników...");
-  for (int i = 0; i < 400; i++) { // Obracanie robota w celu kalibracji
-    qtrrc.calibrate();
-    delay(10);
-  }
-  Serial.println("Kalibracja zakończona!");
 
 
  void setup()
 {
-
+ Serial.begin(9600);
   pinMode(MOTOR_A_IN1, OUTPUT);
   pinMode(MOTOR_A_IN2, OUTPUT);
   pinMode(MOTOR_B_IN1, OUTPUT);
   pinMode(MOTOR_B_IN2, OUTPUT);
-  pinMode(buttonPin, INPUT);   
-
-  // check if the pushbutton is pressed.
-  // if it is, the buttonState is HIGH:
-  if (buttonState == HIGH) {   
-    // turn LED on:   
-    digitalWrite(ledPin, HIGH); 
-  }
-  else {
-    // turn LED off:
-    digitalWrite(ledPin, LOW);
-  }
-  int i;
+  pinMode(BUTTON_PIN, INPUT_PULLUP);   
+ 
+   int i;
   for (i = 0; i < 250; i++)  // make the calibration take about 5 seconds
   {
-    qtr.calibrate();
+    qtrrc.calibrate();
     delay(20);
   }
+  }
+
+
+// Wciśnięcie przycisku
+void TRYB_ROBOTA() {
+   
+
+  // Sprawdzamy, czy przycisk został wciśnięty (zbocze opadające)
+  if (buttonState == LOW && lastButtonState == HIGH) {
+    clickCount++; // Zwiększamy licznik kliknięć
+  }
+
+  lastButtonState = buttonState; // Aktualizacja poprzedniego stanu przycisku
+ if (millis() - startTime >= TIME_LIMIT) {
+    // Sprawdzenie ilości kliknięć i wybór trybu
+    if (clickCount >= 2 ){  // Przykład: 5 lub więcej kliknięć = tryb NORMALNY
+      mode = NORMAL_MODE;
+    } else if{
+      mode = DEMO_MODE;
+    }
+    clickCount = 0;            // Zerowanie licznika kliknięć
+    startTime = millis();      // Restart czasu pomiaru
+
 }
+
 // ZATRZYMANIE ROBOTA
 void stopMotors() {
   analogWrite(MOTOR_A_IN1, 0);
@@ -62,6 +70,7 @@ void stopMotors() {
   analogWrite(MOTOR_B_IN1, 0);
   analogWrite(MOTOR_B_IN2, 0);
 }
+
 // LEWY SILNIK
 void leftMotor(int speed, bool forward) {
   if (forward) {
@@ -72,6 +81,7 @@ void leftMotor(int speed, bool forward) {
     digitalWrite(3, LOW); 
   }
 }
+
 // PRAWY SILNIK
 void rightMotor(int speed, bool forward) {
   if (forward) {
@@ -83,22 +93,20 @@ void rightMotor(int speed, bool forward) {
   }
 }
 
-
-
-
-
-void loop() 
+//TRYB LINE FOLLOWER
+void lineFollower()
 {
+   int position = qtrrc.readLine(sensors);
    int error = position - 1000;
   // Sterowanie silnikami w zależności od pozycji linii
   int baseSpeed = 150;   // Podstawowa prędkość silników
   int turnSpeed = 50;    // Korekta prędkości dla zakrętów
 
-  if (position < 2000) {
+  if (error < -500) {
     // Skręć w lewo
     leftMotor(baseSpeed - turnSpeed, true);
     rightMotor(baseSpeed + turnSpeed, true);
-  } else if (position > 4000) {
+  } else if (position > 500) {
     // Skręć w prawo
     leftMotor(baseSpeed + turnSpeed, true);
     rightMotor(baseSpeed - turnSpeed, true);
@@ -108,11 +116,73 @@ void loop()
     rightMotor(baseSpeed, true);
   }
 
-
 }
 
-//////////////////////////////////////////
+void demoMode() {
+  Serial.println("Tryb DEMO - ruch losowy");
 
+  leftMotor(random(100, 150), true);
+  rightMotor(random(100, 150), true);
+  delay(500); // Krótki ruch
+
+  leftMotor(0, true);
+  rightMotor(0, true);
+  delay(200);
+}
+
+void loop() 
+{
+  TRYB_ROBOTA();
+ 
+  if (wybrany_tryb == DEMO_MODE) {
+    demoMode(); // Tryb demo
+  } else if (wybrany_tryb == NORMAL_MODE) {
+    lineFollower(); // Tryb normalny - śledzenie linii
+  }
+
+}
+//////////////////////////////
+///////////////
+///////////////
+/////////////////////////////
+///////////////
+///////////////
+/////////////////////////////
+///////////////
+///////////////
+/////////////////////////////
+///////////////
+///////////////
+//////////////
+///////////////
+///////////////
+//////////////
+//////////////////////////////////////////////
+//     .-""""-.        .-""""-.         //////
+//    /        \      /        \        //////  
+//   /_        _\    /_        _\       //////
+//  // \      / \\  // \      / \\      //////
+//  |\__\    /__/|  |\__\    /__/|      //////  
+//   \    ||    /    \    ||    /       //////
+//    \        /      \        /        //////  
+//     \  __  /        \  __  /         //////  
+//      '.__.'          '.__.'          //////
+//       |  |            |  |           //////  
+///      |  |            |  |           //////
+///////////////////////////////////////////////////////
+//////////////////////////////////////////WSZYSTKO CO PONIZEJ TO KLAMSTWO I NIEPRAWDA/////////////////////////////
+// do testowania silników
+void demoMode() {
+  Serial.println("Tryb DEMO - ruch losowy");
+
+  leftMotor(random(100, 150), true);
+  rightMotor(random(100, 150), true);
+  delay(500); // Krótki ruch
+
+  leftMotor(0, true);
+  rightMotor(0, true);
+  delay(200);
+}
 void setup()
 {
 
@@ -209,3 +279,27 @@ void loop()
  
   // set motor speeds using the two motor speed variables above
 }
+
+
+  POWROT=0;
+  czas=millis();
+  while(POWROT==0 && czas<10000)
+  {
+    tryb=digitalRead(BUTTON_PIN);
+    delay(10000)
+      if (tryb>1)
+        {
+          wybrany_tryb=NORMAL_MODE;
+          POWROT=1;
+        }
+      else if (tryb=1)
+      {
+        wybrany_tryb=DEMO_MODE;
+          POWROT=1;
+      }
+      else
+      {
+        tryb=0;
+        czas=0;
+      }
+  }
