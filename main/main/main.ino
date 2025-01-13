@@ -2,10 +2,7 @@
 #include <QTRSensors.h>
 
 
-void emittersOn()
-sensors.read(sensor_values);
- QTRSensorsRC qtrrc((unsigned char[]) {6, 7, 8, 9, 10, 11, 12, 13}, 8); // 8 czujników
- int sensorValues[8]; // Tablica odczytów czujników
+
 
 // definiowanie pinow
 #define MOTOR_A_IN1 A1  // Lewy silnik 
@@ -14,7 +11,9 @@ sensors.read(sensor_values);
 #define MOTOR_B_IN2 A4  // Prawy silnik 
 #define BUTTON_PIN  A5 // PRZYCISK
 #define TIME_LIMIT 10000  
-
+QTRSensors qtr;
+const uint8_t SensorCount = 8;
+uint16_t sensorValues[SensorCount];
 bool buttonState = digitalRead(BUTTON_PIN); // Odczyt stanu przycisku
 int clickCount = 0;           // Licznik kliknięć
 unsigned long startTime = 0;  // Czas startu odliczania
@@ -30,12 +29,21 @@ bool lastButtonState = HIGH;  // Poprzedni stan przycisku
   pinMode(MOTOR_A_IN2, OUTPUT);
   pinMode(MOTOR_B_IN1, OUTPUT);
   pinMode(MOTOR_B_IN2, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT_PULLUP);   
+  pinMode(BUTTON_PIN, INPUT_PULLUP); 
+
+
+  
+  
+// configure the sensors
+  qtr.setTypeRC();
+  qtr.setSensorPins((const uint8_t[]){6, 7, 8, 9, 10, 11, 12, 13}, 8);
+  qtr.setEmitterPin(2);
+
  
    int i;
   for (i = 0; i < 250; i++)  // make the calibration take about 5 seconds
   {
-    qtrrc.calibrate();
+    qtr.calibrate();
     delay(20);
   }
   }
@@ -62,9 +70,10 @@ void TRYB_ROBOTA() {
     startTime = millis();      // Restart czasu pomiaru
 
 }
-
+}
 // ZATRZYMANIE ROBOTA
 void stopMotors() {
+
   analogWrite(MOTOR_A_IN1, 0);
   analogWrite(MOTOR_A_IN2, 0);
   analogWrite(MOTOR_B_IN1, 0);
@@ -96,8 +105,8 @@ void rightMotor(int speed, bool forward) {
 //TRYB LINE FOLLOWER
 void lineFollower()
 {
-   int position = qtrrc.readLine(sensors);
-   int error = position - 1000;
+   uint16_t position = qtr.readLineBlack(sensorValues);
+   int error = position - 1000;
   // Sterowanie silnikami w zależności od pozycji linii
   int baseSpeed = 150;   // Podstawowa prędkość silników
   int turnSpeed = 50;    // Korekta prędkości dla zakrętów
@@ -117,14 +126,13 @@ void lineFollower()
   }
 
 }
+// Krótki ruch
+void demoMode(){
 
-void demoMode() {
   Serial.println("Tryb DEMO - ruch losowy");
-
   leftMotor(random(100, 150), true);
   rightMotor(random(100, 150), true);
-  delay(500); // Krótki ruch
-
+  delay(500);
   leftMotor(0, true);
   rightMotor(0, true);
   delay(200);
@@ -141,6 +149,27 @@ void loop()
   }
 
 }
+//////////////////////////////////////////////
+//     .-""""-.        .-""""-.         //////
+//    /        \      /        \        //////  
+//   /_        _\    /_        _\       //////
+//  // \      / \\  // \      / \\      //////
+//  |\__\    /__/|  |\__\    /__/|      //////  
+//   \    ||    /    \    ||    /       //////
+//    \        /      \        /        //////  
+//     \  __  /        \  __  /         //////  
+//      '.__.'          '.__.'          //////
+//       |  |            |  |           //////  
+///      |  |            |  |           //////
+///////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
 //////////////////////////////
 ///////////////
 ///////////////
@@ -172,19 +201,6 @@ void loop()
 ///////////////////////////////////////////////////////
 //////////////////////////////////////////WSZYSTKO CO PONIZEJ TO KLAMSTWO I NIEPRAWDA/////////////////////////////
 // do testowania silników
-void demoMode() {
-  Serial.println("Tryb DEMO - ruch losowy");
-
-  leftMotor(random(100, 150), true);
-  rightMotor(random(100, 150), true);
-  delay(500); // Krótki ruch
-
-  leftMotor(0, true);
-  rightMotor(0, true);
-  delay(200);
-}
-void setup()
-{
 
   
   // optional: wait for some input from the user, such as  a button press
@@ -202,39 +218,7 @@ void setup()
   // input from the user, such as a button press
 }
 
-void loop()
-{
-  unsigned int sensors[3];
-  // get calibrated sensor values returned in the sensors array, along with the line
-  // position, which will range from 0 to 2000, with 1000 corresponding to the line
-  // over the middle sensor.
-  int position = qtr.readLine(sensors);
- 
-  // if all three sensors see very low reflectance, take some appropriate action for this 
-  // situation.
-  if (sensors[0] > 750 && sensors[1] > 750 && sensors[2] > 750)
-  {
-    // do something.  Maybe this means we're at the edge of a course or about to fall off 
-    // a table, in which case, we might want to stop moving, back up, and turn around.
-    return;
-  }
- 
-  // compute our "error" from the line position.  We will make it so that the error is
-  // zero when the middle sensor is over the line, because this is our goal.  Error
-  // will range from -1000 to +1000.  If we have sensor 0 on the left and sensor 2 on
-  // the right,  a reading of -1000 means that we see the line on the left and a reading
-  // of +1000 means we see the line on the right.
-  int error = position - 1000;
- 
-  int leftMotorSpeed = 100;
-  int rightMotorSpeed = 100;
-  if (error < -500)  // the line is on the left
-    leftMotorSpeed = 0;  // turn left
-  if (error > 500)  // the line is on the right
-    rightMotorSpeed = 0;  // turn right
- 
-  // set motor speeds using the two motor speed variables above
-}
+
 
 int lastError = 0;
  
