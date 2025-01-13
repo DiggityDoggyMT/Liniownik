@@ -61,22 +61,22 @@ void stopMotors() {
 // LEWY SILNIK
 void leftMotor(int speed, bool forward) {
   if (forward) {
-    analogWrite(2, 0); //Silnik A - obroty w lewo
-    analogWrite(3, speed); 
+    analogWrite(A1, 0); //Silnik A - obroty w lewo
+    analogWrite(A2, speed); 
   } else {
-    analogWrite(2, speed); //Silnik A - obroty w prawo
-    analogWrite(3, 0); 
+    analogWrite(A1, speed); //Silnik A - obroty w prawo
+    analogWrite(A2, 0); 
   }
 }
 
 // PRAWY SILNIK
 void rightMotor(int speed, bool forward) {
   if (forward) {
-    analogWrite(4, 0); //Silnik B - obroty w lewo
-    analogWrite(5, speed); 
+    analogWrite(A3, 0); //Silnik B - obroty w lewo
+    analogWrite(A4, speed); 
   } else {
-    analogWrite(4, speed); //Silnik B - obroty w prawo
-    analogWrite(5, 0); 
+    analogWrite(A3, speed); //Silnik B - obroty w prawo
+    analogWrite(A4, 0); 
   }
 }
 
