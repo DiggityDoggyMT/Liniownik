@@ -75,9 +75,9 @@ void stopMotors() {
 void leftMotor(int speed, bool forward) {
   if (forward) {
     analogWrite(2, 0); //Silnik A - obroty w lewo
-    analogWrite(3, 255); 
+    analogWrite(3, speed); 
   } else {
-    analogWrite(2, 255); //Silnik A - obroty w prawo
+    analogWrite(2, speed); //Silnik A - obroty w prawo
     analogWrite(3, 0); 
   }
 }
@@ -86,9 +86,9 @@ void leftMotor(int speed, bool forward) {
 void rightMotor(int speed, bool forward) {
   if (forward) {
     analogWrite(4, 0); //Silnik B - obroty w lewo
-    analogWrite(5, 255); 
+    analogWrite(5, speed); 
   } else {
-    analogWrite(4, 255); //Silnik B - obroty w prawo
+    analogWrite(4, speed); //Silnik B - obroty w prawo
     analogWrite(5, 0); 
   }
 }
