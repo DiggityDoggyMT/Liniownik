@@ -8,11 +8,11 @@ sensors.read(sensor_values);
  int sensorValues[8]; // Tablica odczytów czujników
 
 // definiowanie pinow
-#define MOTOR_A_IN1 2  // Lewy silnik 
-#define MOTOR_A_IN2 3  // Lewy silnik 
-#define MOTOR_B_IN1 4  // Prawy silnik 
-#define MOTOR_B_IN2 5  // Prawy silnik 
-#define BUTTON_PIN  A3 // PRZYCISK
+#define MOTOR_A_IN1 A1  // Lewy silnik 
+#define MOTOR_A_IN2 A2  // Lewy silnik 
+#define MOTOR_B_IN1 A3  // Prawy silnik 
+#define MOTOR_B_IN2 A4  // Prawy silnik 
+#define BUTTON_PIN  A5 // PRZYCISK
 #define TIME_LIMIT 10000  
 
 bool buttonState = digitalRead(BUTTON_PIN); // Odczyt stanu przycisku
@@ -74,22 +74,22 @@ void stopMotors() {
 // LEWY SILNIK
 void leftMotor(int speed, bool forward) {
   if (forward) {
-    analogWrite(2, LOW); //Silnik A - obroty w lewo
-    analogWrite(3, HIGH); 
+    analogWrite(2, 0); //Silnik A - obroty w lewo
+    analogWrite(3, 255); 
   } else {
-    analogWrite(2, HIGH); //Silnik A - obroty w prawo
-    analogWrite(3, LOW); 
+    analogWrite(2, 255); //Silnik A - obroty w prawo
+    analogWrite(3, 0); 
   }
 }
 
 // PRAWY SILNIK
 void rightMotor(int speed, bool forward) {
   if (forward) {
-    analogWrite(4, LOW); //Silnik B - obroty w lewo
-    analogWrite(5, HIGH); 
+    analogWrite(4, 0); //Silnik B - obroty w lewo
+    analogWrite(5, 255); 
   } else {
-    analogWrite(4, HIGH); //Silnik B - obroty w prawo
-    analogWrite(5, LOW); 
+    analogWrite(4, 255); //Silnik B - obroty w prawo
+    analogWrite(5, 0); 
   }
 }
 
