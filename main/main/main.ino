@@ -106,7 +106,7 @@ void lineFollower()
     // Skręć w lewo
     leftMotor(baseSpeed - turnSpeed, true);
     rightMotor(baseSpeed + turnSpeed, true);
-  } else if (position > 500) {
+  } else if (error > 500) {
     // Skręć w prawo
     leftMotor(baseSpeed + turnSpeed, true);
     rightMotor(baseSpeed - turnSpeed, true);
