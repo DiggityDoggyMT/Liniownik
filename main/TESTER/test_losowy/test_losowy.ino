@@ -5,15 +5,14 @@
 
 
 // definiowanie pinow
- const int MOTOR_A_IN1 = A1  // Prawy silnik 
- const int MOTOR_A_IN2 = A2  // Prawy silnik 
- const int MOTOR_B_IN1 = A3  // Lewy silnik 
- const int MOTOR_B_IN2 = A4  // Lewy silnik 
+ const int MOTOR_A_IN1 = A1;  // Prawy silnik 
+ const int MOTOR_A_IN2 = A2;  // Prawy silnik 
+ const int MOTOR_B_IN1 = A3; // Lewy silnik 
+ const int MOTOR_B_IN2 = A4;  // Lewy silnik 
 
 QTRSensors qtr;
 const uint8_t SensorCount = 8;
 uint16_t sensorValues[SensorCount];
-bool buttonState = digitalRead(BUTTON_PIN); // Odczyt stanu przycisku
 int clickCount = 0;           // Licznik kliknięć
 unsigned long startTime = 0;  // Czas startu odliczania
 bool lastButtonState = HIGH;  // Poprzedni stan przycisku
@@ -28,7 +27,7 @@ bool lastButtonState = HIGH;  // Poprzedni stan przycisku
   pinMode(MOTOR_A_IN2, OUTPUT);
   pinMode(MOTOR_B_IN1, OUTPUT);
   pinMode(MOTOR_B_IN2, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT_PULLUP); 
+
 
 
   
