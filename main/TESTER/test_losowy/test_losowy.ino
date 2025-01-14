@@ -5,10 +5,10 @@
 
 
 // definiowanie pinow
-#define MOTOR_A_IN1 A1  // Lewy silnik 
-#define MOTOR_A_IN2 A2  // Lewy silnik 
-#define MOTOR_B_IN1 A3  // Prawy silnik 
-#define MOTOR_B_IN2 A4  // Prawy silnik 
+#define MOTOR_A_IN1 A1  // Prawy silnik 
+#define MOTOR_A_IN2 A2  // Prawy silnik 
+#define MOTOR_B_IN1 A3  // Lewy silnik 
+#define MOTOR_B_IN2 A4  // Lewy silnik 
 #define BUTTON_PIN  A5 // PRZYCISK
 #define TIME_LIMIT 10000  
 QTRSensors qtr;
@@ -61,22 +61,22 @@ void stopMotors() {
 // LEWY SILNIK
 void leftMotor(int speed, bool forward) {
   if (forward) {
-    analogWrite(A1, 0); //Silnik A - obroty w lewo
-    analogWrite(A2, speed); 
+    analogWrite(A3, 0); //Silnik A - obroty w lewo
+    analogWrite(A4, speed); 
   } else {
-    analogWrite(A1, speed); //Silnik A - obroty w prawo
-    analogWrite(A2, 0); 
+    analogWrite(A3, speed); //Silnik A - obroty w prawo
+    analogWrite(A4, 0); 
   }
 }
 
 // PRAWY SILNIK
 void rightMotor(int speed, bool forward) {
   if (forward) {
-    analogWrite(A3, 0); //Silnik B - obroty w lewo
-    analogWrite(A4, speed); 
+    analogWrite(A1, 0); //Silnik B - obroty w lewo
+    analogWrite(A2, speed); 
   } else {
-    analogWrite(A3, speed); //Silnik B - obroty w prawo
-    analogWrite(A4, 0); 
+    analogWrite(A1, speed); //Silnik B - obroty w prawo
+    analogWrite(A2, 0); 
   }
 }
 
