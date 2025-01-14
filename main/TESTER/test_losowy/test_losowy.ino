@@ -5,12 +5,11 @@
 
 
 // definiowanie pinow
-#define MOTOR_A_IN1 A1  // Prawy silnik 
-#define MOTOR_A_IN2 A2  // Prawy silnik 
-#define MOTOR_B_IN1 A3  // Lewy silnik 
-#define MOTOR_B_IN2 A4  // Lewy silnik 
-#define BUTTON_PIN  A5 // PRZYCISK
-#define TIME_LIMIT 10000  
+ const int MOTOR_A_IN1 = A1  // Prawy silnik 
+ const int MOTOR_A_IN2 = A2  // Prawy silnik 
+ const int MOTOR_B_IN1 = A3  // Lewy silnik 
+ const int MOTOR_B_IN2 = A4  // Lewy silnik 
+
 QTRSensors qtr;
 const uint8_t SensorCount = 8;
 uint16_t sensorValues[SensorCount];
