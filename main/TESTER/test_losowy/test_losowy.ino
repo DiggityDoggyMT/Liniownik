@@ -59,11 +59,11 @@ void stopMotors() {
 // LEWY SILNIK
 void leftMotor(int speed, bool forward) {
   if (forward) {
-    analogWrite(A3, 0); //Silnik A - obroty w lewo
-    analogWrite(A4, speed); 
-  } else {
-    analogWrite(A3, speed); //Silnik A - obroty w prawo
+    analogWrite(A3, speed); //Silnik A - obroty w lewo
     analogWrite(A4, 0); 
+  } else {
+    analogWrite(A3, 0); //Silnik A - obroty w prawo
+    analogWrite(A4, speed); 
   }
 }
 
@@ -106,7 +106,7 @@ void lineFollower()
 void demoMode(){
 
   Serial.println("Tryb DEMO - ruch losowy");
-  leftMotor(random(100, 150), true);
+  leftMotor(random(100, 150), random(true, false);
   rightMotor(random(100, 150), true);
   delay(500);
   leftMotor(0, true);
