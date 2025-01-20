@@ -8,15 +8,13 @@
  const int MOTOR_A_IN2 = A2;  // Prawy silnik 
  const int MOTOR_B_IN1 = A3; // Lewy silnik 
  const int MOTOR_B_IN2 = A4;  // Lewy silnik 
-  ezButton toggleSwitch(5);  // create ezButton object that attach to pin 7;
+  ezButton toggleSwitch(5);  
 
 QTRSensors qtr;
 const uint8_t SensorCount = 8;
 uint16_t sensorValues[SensorCount];
 int clickCount = 0;           // Licznik kliknięć
 unsigned long startTime = 0;  // Czas startu odliczania
-bool lastButtonState = HIGH;  // Poprzedni stan przycisku
-
 int lastError = 0;
 
 
@@ -86,13 +84,15 @@ void lineFollower()
    int lineCenter = 3500;
    int error = lineCenter - position;
    lastError = error;
+    Serial.print("Position: ");
+     Serial.print(position);
+     Serial.print("ERROR: ");
+    Serial.print(error);
   // Sterowanie silnikami w zależności od pozycji linii
   int baseSpeed = 150;   // Podstawowa prędkość silników
   int turnSpeed = error*PID_P + PID_D*(error - lastError); // Korekta prędkości dla zakrętów
-  leftMotor(baseSpeed - turnSpeed, true);
-  rightMotor(baseSpeed - turnSpeed, true);
-
-
+  //leftMotor(baseSpeed - turnSpeed, true);
+  //rightMotor(baseSpeed - turnSpeed, true);
 }
 // Krótki ruch
 void demoMode()
