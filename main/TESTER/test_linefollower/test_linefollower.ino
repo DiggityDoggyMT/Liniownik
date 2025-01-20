@@ -104,8 +104,8 @@ void lineFollower()
 
 }
 // Krótki ruch
-void demoMode(){
-
+void demoMode()
+{
   Serial.println("Tryb DEMO - ruch losowy");
   leftMotor(random(100, 150), true);
   rightMotor(random(100, 150), true);
