@@ -82,7 +82,7 @@ void lineFollower()
 {
   int PID_P = 0.2;
   int PID_D = 1;
-   uint16_t position = qtr.readLineWhite(sensorValues);
+   uint16_t position = qtr.readLineBlack(sensorValues);
    int lineCenter = 3500;
    int error = lineCenter - position;
    lastError = error;
