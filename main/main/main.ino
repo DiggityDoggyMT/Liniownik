@@ -8,7 +8,7 @@
  const int MOTOR_A_IN2 = A2;  // Prawy silnik 
  const int MOTOR_B_IN1 = A3; // Lewy silnik 
  const int MOTOR_B_IN2 = A4;  // Lewy silnik 
- ezButton toggleSwitch(5);  
+  ezButton toggleSwitch(5);  
 
 QTRSensors qtr;
 const uint8_t SensorCount = 8;
@@ -84,16 +84,16 @@ void lineFollower()
    int lineCenter = 3500;
    int error = lineCenter - position;
    lastError = error;
-    //delay(1000); //Testowanie wartosci jakie dostajemy od sensora
+   //delay(1000);  //Testowanie wartosci jakie dostajemy od sensora
    // Serial.print("Position: ");
     // Serial.print(position);
-    // Serial.print("ERROR: ");
-    //Serial.print(error);
+     //Serial.print("ERROR: ");
+   // Serial.print(error);
   // Sterowanie silnikami w zależności od pozycji linii
   int baseSpeed = 150;   // Podstawowa prędkość silników
   int turnSpeed = error*PID_P + PID_D*(error - lastError); // Korekta prędkości dla zakrętów
-  leftMotor(baseSpeed - turnSpeed, true);
-  rightMotor(baseSpeed - turnSpeed, true);
+  leftMotor(baseSpeed + (turnSpeed/2), true);
+  rightMotor(baseSpeed - (turnSpeed/2), true);
 }
 // Krótki ruch
 void demoMode()
@@ -109,18 +109,11 @@ void demoMode()
 
 void loop() 
 {
-
-   toggleSwitch.loop(); // MUST call the loop() function first
-  if (toggleSwitch.isPressed())
-  {
-      Serial.println("The button is released");
-  }
-    
-  if (toggleSwitch.isReleased())
-  {
- Serial.println("The button is released");
-  }
-   
+   //toggleSwitch.loop(); // MUST call the loop() function first
+  //if (toggleSwitch.isPressed())
+    lineFollower();
+  //if (toggleSwitch.isReleased())
+    //demoMode();
 
 }
 //////////////////////////////////////////////
