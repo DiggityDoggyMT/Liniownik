@@ -16,7 +16,7 @@ uint16_t sensorValues[SensorCount];
 int clickCount = 0;           // Licznik kliknięć
 unsigned long startTime = 0;  // Czas startu odliczania
 int lastError = 0;
-
+boolean isGoal = false;
 
  void setup()
 {
@@ -43,6 +43,15 @@ int lastError = 0;
   }
   }
 
+// WYKRYCIE METY
+bool detectMeta() {
+  for (int i = 0; i < SensorCount; i++) {
+    if (sensorValues[i] > 200) {
+      return false;  
+    }
+  }
+  return true;  
+}
 
 // ZATRZYMANIE ROBOTA
 void stopMotors() {
@@ -78,26 +87,43 @@ void rightMotor(int speed, bool forward) {
 //TRYB LINE FOLLOWER
 void lineFollower()
 {
-  int PID_P = 0.2;
-  int PID_D = 1;
+  int PID_P = 1.2; //1 //1.2
+  int PID_D = 1; //0   //1
    uint16_t position = qtr.readLineWhite(sensorValues);
    int lineCenter = 3500;
    int error = lineCenter - position;
-   lastError = error;
-   //delay(1000);  //Testowanie wartosci jakie dostajemy od sensora
-   // Serial.print("Position: ");
-    // Serial.print(position);
+   
+
+   //delay(500);  //Testowanie wartosci jakie dostajemy od sensora
+   //Serial.print('\n');
+   //Serial.print("===============");
+   //Serial.print('\n');
+    //Serial.print("Position: ");
+    //Serial.print('\n');
+     //Serial.print(position);
+     //Serial.print('\n');
      //Serial.print("ERROR: ");
-   // Serial.print(error);
+     //Serial.print('\n');
+    //Serial.print(error);
   // Sterowanie silnikami w zależności od pozycji linii
-  int baseSpeed = 150;   // Podstawowa prędkość silników
+  int baseSpeed = 350;   // Podstawowa prędkość silników //350
   int turnSpeed = error*PID_P + PID_D*(error - lastError); // Korekta prędkości dla zakrętów
-  leftMotor(baseSpeed + (turnSpeed/2), true);
-  rightMotor(baseSpeed - (turnSpeed/2), true);
+    if (detectMeta()) {
+    stopMotors();
+    delay(1000);
+    isGoal = true;
+    return;
+  }
+  lastError = error;
+  leftMotor(baseSpeed + turnSpeed, true);
+  rightMotor(baseSpeed - turnSpeed, true);
 }
 // Krótki ruch
 void demoMode()
 {
+  int powtorzenia=0;
+  while (powtorzenia<10)
+  {
   Serial.println("Tryb DEMO - ruch losowy");
   leftMotor(random(100, 150), true);
   rightMotor(random(100, 150), true);
@@ -105,16 +131,33 @@ void demoMode()
   leftMotor(0, true);
   rightMotor(0, true);
   delay(200);
+  powtorzenia++;
+  }
+ 
 }
 
 void loop() 
 {
-   //toggleSwitch.loop(); // MUST call the loop() function first
-  //if (toggleSwitch.isPressed())
-    lineFollower();
-  //if (toggleSwitch.isReleased())
-    //demoMode();
+   toggleSwitch.loop(); // MUST call the loop() function first
+  if (toggleSwitch.isPressed())
+  {
+      if(!isGoal)
+        {
+        lineFollower();
+        }
 
+      else
+        {
+        leftMotor(0, false);
+        rightMotor(0, false);
+        }
+  }
+  
+  if (toggleSwitch.isReleased())
+  {
+    demoMode();
+  }
+    
 }
 //////////////////////////////////////////////
 //     .-""""-.        .-""""-.         //////
