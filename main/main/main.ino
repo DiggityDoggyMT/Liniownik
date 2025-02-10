@@ -160,7 +160,9 @@ void demoMode()
 void loop() 
 {
    toggleSwitch.loop(); // MUST call the loop() function first
-   int state = toggle.Switch.getState();
+   delay(5000);
+   int state = toggleSwitch.getState();
+
   if (state == HIGH)
     {
       if(!isGoal)
