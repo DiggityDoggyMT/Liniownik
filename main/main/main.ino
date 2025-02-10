@@ -14,9 +14,10 @@ QTRSensors qtr;
 const uint8_t SensorCount = 8;
 uint16_t sensorValues[SensorCount];
 int clickCount = 0;           // Licznik kliknięć
-unsigned long startTime = 0;  // Czas startu odliczania
+unsigned long czas_mierzony = 0;  // Czas startu odliczania
 int lastError = 0;
 boolean isGoal = false;
+
 
  void setup()
 {
@@ -47,6 +48,15 @@ boolean isGoal = false;
 bool detectMeta() {
   for (int i = 0; i < SensorCount; i++) {
     if (sensorValues[i] > 200) {
+      return false;  
+    }
+  }
+  return true;  
+}
+
+bool detectInter() {
+  for (int i = 0; i < SensorCount; i++) {
+    if (sensorValues[i] > 400) {
       return false;  
     }
   }
@@ -108,11 +118,21 @@ void lineFollower()
   // Sterowanie silnikami w zależności od pozycji linii
   int baseSpeed = 350;   // Podstawowa prędkość silników //350
   int turnSpeed = error*PID_P + PID_D*(error - lastError); // Korekta prędkości dla zakrętów
-    if (detectMeta()) {
-    stopMotors();
-    delay(1000);
-    isGoal = true;
+    if (detectMeta()) 
+    {
+          czas_mierzony=millis();
+    
+   if (detectMeta() && czas_mierzony+1000<millis())
+    {
+   isGoal = true;
     return;
+    }
+  }
+  else if (detectInter()) {
+    leftMotor(0, true);
+    rightMotor(150, true);
+    delay(2500);
+    
   }
   lastError = error;
   leftMotor(baseSpeed + turnSpeed, true);
@@ -132,6 +152,7 @@ void demoMode()
   rightMotor(0, true);
   delay(200);
   powtorzenia++;
+  return;
   }
  
 }
@@ -139,21 +160,20 @@ void demoMode()
 void loop() 
 {
    toggleSwitch.loop(); // MUST call the loop() function first
-  if (toggleSwitch.isPressed())
-  {
+   int state = toggle.Switch.getState();
+  if (state == HIGH)
+    {
       if(!isGoal)
         {
         lineFollower();
         }
-
       else
         {
         leftMotor(0, false);
         rightMotor(0, false);
         }
-  }
-  
-  if (toggleSwitch.isReleased())
+    }
+  else
   {
     demoMode();
   }
